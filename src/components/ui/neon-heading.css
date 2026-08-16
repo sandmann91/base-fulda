@@ -1,0 +1,24 @@
+/* Sharp on/off flicker per character (steps() statt Transition -> harte Schnitte,
+   kein weiches Pulsieren). Zufällige animation-delay/-duration pro Zeichen
+   (siehe neon-heading.tsx) sorgen dafür, dass nicht alle Zeichen synchron blinken. */
+@keyframes neon-flicker-char {
+  0%, 92%, 100% {
+    opacity: 1;
+  }
+  93%, 95% {
+    opacity: 0.25;
+  }
+  96%, 97% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 0.15;
+  }
+}
+
+.neon-flicker-char {
+  display: inline-block;
+  animation-name: neon-flicker-char;
+  animation-iteration-count: infinite;
+  animation-timing-function: steps(1, end);
+}

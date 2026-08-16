@@ -1,7 +1,8 @@
-import { Container, Heading, Stack, Text } from "@chakra-ui/react";
+import { Container, Stack, Text } from "@chakra-ui/react";
 import { Seo } from "@/components/seo/seo";
-import { OrbitalTrailsHero } from "@/components/hero/orbital-trails-hero";
+import { TextFormationHero } from "@/components/hero/text-formation-hero";
 import { EventList } from "@/components/events/event-list";
+import { NeonHeading } from "@/components/ui/neon-heading";
 
 const DESCRIPTION =
   "BASE. ist der Club für Subkultur, elektronische Musik und Awareness in Fulda. Events, Partys und ein sicherer Raum für alle. Komm wie du bist!";
@@ -10,12 +11,10 @@ export function HomePage() {
   return (
     <>
       <Seo title="Subkultur Club & Events" description={DESCRIPTION} canonicalPath="/" />
-      <OrbitalTrailsHero />
-      <Container maxW="6xl" py={16}>
-        <Stack gap={4} mb={12}>
-          <Heading as="h2" size="lg">
-            Club
-          </Heading>
+      <TextFormationHero />
+      <Container maxW="6xl" py={16} fontSize={{ base: "lg", md: "xl" }}>
+        <Stack gap={6} mb={24}>
+          <NeonHeading as="h2">Club</NeonHeading>
           <Text>
             Subkultur braucht einen Raum. Eine Basis, auf der Kreativität und Ekstase wachsen können. base. ist
             dieser Raum. In den Tiefen unseres Clubs feiern wir die rohe Energie der Underground-Subkultur.
@@ -25,17 +24,13 @@ export function HomePage() {
           <Text>Kein Platz für Diskriminierung. Viel Platz für dich.</Text>
         </Stack>
 
-        <Stack gap={4} mb={12}>
-          <Heading as="h2" size="lg">
-            Events
-          </Heading>
+        <Stack gap={6} mb={24}>
+          <NeonHeading as="h2">Events</NeonHeading>
           <EventList />
         </Stack>
 
-        <Stack gap={4}>
-          <Heading as="h2" size="lg">
-            Awareness
-          </Heading>
+        <Stack gap={6}>
+          <NeonHeading as="h2">Awareness</NeonHeading>
           <Text>
             Wir von der BASE möchten, dass ihr bei uns einen sicheren Ort zum raven habt, an dem sich möglichst alle
             wohlfühlen können.

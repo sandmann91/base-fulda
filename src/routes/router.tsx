@@ -6,8 +6,11 @@ import { EventDetailPage } from "@/pages/event-detail-page";
 import { NotFoundPage } from "@/pages/not-found-page";
 import { LoginPage } from "@/pages/admin/login-page";
 import { DashboardPage } from "@/pages/admin/dashboard-page";
+import { OrbitalTextRevealHero } from "@/components/hero/orbital-text-reveal-hero";
 
 export const router = createBrowserRouter([
+  // Experimentelle Hero-Variante ohne Seiten-Chrome — nur zum Ausprobieren/Abstimmen.
+  { path: "/hero-lab", element: <OrbitalTextRevealHero /> },
   {
     element: <RootLayout />,
     children: [
