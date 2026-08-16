@@ -1,29 +1,38 @@
 # base-fulda
 
-PHP-Seite. Im Dev-Modus läuft sie über den eingebauten PHP-Webserver, Browser Sync sorgt für Live-Reload – kein Apache/XAMPP nötig.
+Website für den Club **BASE. Fulda** — Vite + React + Chakra UI im Frontend, ein schlankes PHP-Backend (ohne Framework/Composer) für die Event-Verwaltung.
 
-## Voraussetzung
+## Setup
 
-PHP muss in der Kommandozeile verfügbar sein (`php -v`).
+1. Dependencies installieren: `npm install`
+2. Admin-Passwort einrichten:
+   - `api/lib/config.local.example.php` nach `api/lib/config.local.php` kopieren
+   - Hash erzeugen: `php -r "echo password_hash('DEIN_PASSWORT', PASSWORD_DEFAULT), PHP_EOL;"`
+   - Hash in `config.local.php` eintragen
+3. Dev-Server starten: `npm run dev`
 
-## Start
+Das startet den eingebauten PHP-Server (`localhost:8000`, dient nur als API-Backend) und Vite (`localhost:5173`) parallel. Vite proxied `/api/*` zum PHP-Server, sodass das Frontend im Dev-Modus genauso mit der API spricht wie später in Produktion.
 
-1) Dependencies installieren:
+Admin-Bereich: `/admin/login`.
 
-`npm install`
+## Build & Deploy
 
-2) Dev-Server starten:
+`npm run build` erzeugt `dist/`. Für den Produktivbetrieb auf einem Standard-Apache/PHP-Webserver:
 
-`npm run dev`
+1. Inhalt von `dist/` (also `index.html` + `assets/`) direkt ins Webroot hochladen (nicht als Unterordner).
+2. `api/`- und `data/`-Ordner daneben ins selbe Webroot hochladen — inkl. `api/lib/config.local.php` mit dem echten Passwort-Hash (diese Datei ist nicht Teil des Git-Repos).
+3. Die Root-`.htaccess` sorgt dafür, dass `/api/*` an PHP geht, echte Dateien direkt ausgeliefert werden und alle anderen Routen (`/events/:slug`, `/admin`, ...) an die SPA fallen, die dann clientseitig per React Router übernimmt.
 
-Das startet parallel den PHP-Server (`localhost:8000`), den CSS-Build im Watch-Modus und Browser Sync, das alles proxied und den Browser automatisch öffnet. Änderungen an `index.php`, `assets/src/**` und `events/` laden automatisch neu.
+Es gibt kein CI/CD — `dist/` wird bewusst **nicht** committed und muss vor jedem Deploy frisch gebaut werden.
 
-Für den produktiven Betrieb (z. B. unter XAMPP/Apache) wird weiterhin ganz normal `index.php` direkt ausgeliefert – dafür ist kein `npm run dev` nötig.
+## Events verwalten
 
-## CSS-Build
+Events werden ausschließlich über den Admin-Bereich (`/admin`) gepflegt: Metadaten liegen in `data/events.json` (nicht versioniert, wird bei Bedarf automatisch angelegt), Titelbilder in `api/uploads/`.
 
-Alle Styles (eigenes CSS, Bootstrap Reboot/Grid, Font Awesome, Google-Fonts-Ersatz via self-hosted Fonts) liegen als Quelle in [assets/src/main.css](assets/src/main.css) und werden per esbuild zu `assets/dist/main.css` (+ Font-Dateien) gebündelt und minifiziert. Es werden bewusst **keine externen CDNs** (Google Fonts, cdnjs) mehr eingebunden – u. a. weil das direkte Laden von Google Fonts beim Seitenaufruf ohne Einwilligung als DSGVO-Verstoß gilt.
+Der alte `events/`-Ordner (Bild+Text-Dateien nach Datum benannt) ist ein Auslaufmodell aus der Vor-CRUD-Zeit und wird vom neuen Code nicht mehr gelesen. Kann gelöscht werden, sobald der Admin-Bereich produktiv genutzt wird.
 
-- Eigene Styles bearbeiten: [assets/src/custom.css](assets/src/custom.css)
-- Einmalig bauen: `npm run build`
-- `assets/dist/` wird mit eingecheckt (kein CI/CD vorhanden) – nach Änderungen an `assets/src/` also **vor dem Deploy immer `npm run build` ausführen und den aktualisierten `assets/dist/`-Ordner committen**.
+## Tech-Stack
+
+- React 19, Chakra UI v3, react-router-dom v7, react-helmet-async (Meta-Tags & JSON-LD für Google-Events)
+- Self-hosted Font "Anta" via `@fontsource` (bewusst kein Google-Fonts-CDN, aus DSGVO-Gründen)
+- PHP 8 ohne Framework/Composer als API-Backend, Event-Daten als JSON-Datei, Bilder als Dateien

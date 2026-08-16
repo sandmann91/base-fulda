@@ -1,4 +1,14 @@
 node_modules/
+dist/
+*.tsbuildinfo
+
+# PHP-Backend Laufzeitdaten (nicht versioniert)
+api/lib/config.local.php
+data/events.json
+data/events.json.lock
+data/auth-throttle.json
+api/uploads/*
+!api/uploads/.gitkeep
 
 # Logs
 npm-debug.log*

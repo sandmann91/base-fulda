@@ -8,11 +8,13 @@ RewriteRule ^ https://base-fulda.de%{REQUEST_URI} [L,R=301]
 RewriteCond %{THE_REQUEST} //+
 RewriteRule ^(.*)//+(.*)$ /$1/$2 [R=301,L]
 
-# Optional: Trailing Slash entfernen (außer für Verzeichnisse und Dateien)
-# RewriteCond %{REQUEST_FILENAME} !-d
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteRule ^(.+)/$ /$1 [R=301,L]
+# API unverändert an PHP durchreichen
+RewriteRule ^api/ - [L]
 
-# Optional: index.html entfernen
-# RewriteCond %{THE_REQUEST} /index\.html [NC]
-# RewriteRule ^(.*)index\.html$ /$1 [R=301,L]
+# Echte Dateien/Verzeichnisse (gebaute Assets, favicon, background.mp4, ...) direkt ausliefern
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Alles andere an die SPA übergeben, React Router übernimmt das Routing
+RewriteRule ^ index.html [L]

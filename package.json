@@ -1,19 +1,31 @@
 {
   "name": "base-fulda",
   "private": true,
-  "version": "1.0.1",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "build": "esbuild assets/src/main.css assets/src/gallery.js --bundle --minify --outdir=assets/dist --entry-names=[name] --asset-names=fonts/[name]-[hash] --loader:.woff2=file --loader:.woff=file",
-    "build:watch": "npm run build -- --watch",
-    "dev": "concurrently -k \"php -S localhost:8000\" \"npm:build:watch\" \"browser-sync start --config bs-config.cjs\""
+    "dev": "concurrently -k -n php,vite -c yellow,cyan \"php -S localhost:8000 -t .\" \"vite\"",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^3.8.0",
+    "@emotion/react": "^11.13.0",
+    "@fontsource/anta": "^5.1.0",
+    "lucide-react": "^0.460.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-helmet-async": "^3.0.0",
+    "react-router-dom": "^7.1.0"
   },
   "devDependencies": {
-    "@fontsource/anta": "^5.3.0",
-    "@fortawesome/fontawesome-free": "^7.3.1",
-    "bootstrap": "^5.3.8",
-    "browser-sync": "^3.0.4",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
     "concurrently": "^10.0.5",
-    "esbuild": "^0.28.2"
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
   }
 }
