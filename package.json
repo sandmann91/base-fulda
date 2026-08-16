@@ -1,14 +1,13 @@
 {
   "name": "base-fulda",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "concurrently -k \"php -S localhost:8000\" \"browser-sync start --config bs-config.js\""
   },
   "devDependencies": {
-    "vite": "^8.2.1"
+    "browser-sync": "^3.0.4",
+    "concurrently": "^10.0.5"
   }
 }
