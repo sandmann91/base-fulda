@@ -20,13 +20,7 @@
     <meta name="twitter:title" content="BASE. Fulda – Subkultur Club & Events" />
     <meta name="twitter:description" content="BASE. ist der Club für Subkultur, elektronische Musik und Awareness in Fulda. Events, Partys und ein sicherer Raum für alle. Komm wie du bist!" />
     <meta name="twitter:image" content="https://base-fulda.de/assets/social-preview.jpg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anta&family=Wix+Madefor+Text:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap-reboot.min.css" integrity="sha512-99XlObZBl5dbDC1T5YLUShB5GxlnFpilkme4bwFVENsJkTvb0fkagArXjEkA/iBSFCuCfuicaqJO/dOm3Cb//g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap-grid.min.css" integrity="sha512-dOjUSaLkr6G2pwQ7ry9juX+iXw5602zg1kg8yH+guR3uSEidGyCnOEQnGlr7xwu/8WE+pVm1ZNqaIs5ETTIJQg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/assets/main.css?v=1" />
+    <link rel="stylesheet" href="/assets/dist/main.css?v=1" />
 </head>
 
 <body>
@@ -102,9 +96,9 @@
                     $date->modify('+1 day');
                     $date->setTime(11, 0, 0);
                     
-                    if($now > $date) {
-                        continue;
-                    }
+                    // if($now > $date) {
+                    //     continue;
+                    // }
 
                     try {
                         $description = trim(substr($file, 11, strrpos($file, '.') - 11));
