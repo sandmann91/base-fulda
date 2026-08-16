@@ -1,6 +1,4 @@
-import "./neon-heading.css";
-import { useMemo } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Heading } from "@chakra-ui/react";
 import type { HeadingProps } from "@chakra-ui/react";
 
@@ -14,26 +12,49 @@ const NEON_SHADOW = [
   "0 0 64px rgba(168, 85, 247, 0.2)",
 ].join(", ");
 
-const FLICKER_CHANCE = 0.35;
+const FLICKER_CHANCE = 0.15;
 
-function withFlickerChars(text: string): ReactNode {
-  return text.split("").map((char, index) => {
-    if (!/\S/.test(char) || Math.random() >= FLICKER_CHANCE) {
-      return char;
+/**
+ * Ein einzelner, unabhängig flackernder Buchstabe. JS-Timeouts statt CSS-
+ * Keyframes, weil Häufigkeit (Pause zwischen Blinks) und Blink-Dauer damit
+ * unabhängig voneinander bleiben — bei einer CSS-@keyframes-Loop hängt die
+ * Dip-Länge zwangsläufig an der animation-duration (länger = seltener, aber
+ * jeder Dip wird dabei auch länger/langsamer statt nur seltener).
+ */
+function FlickerChar({ char }: { char: string }) {
+  const [dim, setDim] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: number;
+
+    function scheduleNext() {
+      const delayUntilFlicker = 4000 + Math.random() * 10000;
+      timeoutId = window.setTimeout(() => {
+        setDim(true);
+        const dimDuration = 60 + Math.random() * 120;
+        timeoutId = window.setTimeout(() => {
+          setDim(false);
+          scheduleNext();
+        }, dimDuration);
+      }, delayUntilFlicker);
     }
-    const delay = (Math.random() * 3).toFixed(2);
-    const duration = (2.4 + Math.random() * 2).toFixed(2);
-    return (
-      <span
-        // eslint-disable-next-line react/no-array-index-key
-        key={index}
-        className="neon-flicker-char"
-        style={{ animationDelay: `${delay}s`, animationDuration: `${duration}s` }}
-      >
-        {char}
-      </span>
-    );
-  });
+    scheduleNext();
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  return <span style={{ display: "inline-block", opacity: dim ? 0.25 : 1 }}>{char}</span>;
+}
+
+function withFlickerChars(text: string) {
+  return text.split("").map((char, index) =>
+    /\S/.test(char) && Math.random() < FLICKER_CHANCE ? (
+      // eslint-disable-next-line react/no-array-index-key
+      <FlickerChar key={index} char={char} />
+    ) : (
+      char
+    ),
+  );
 }
 
 /**

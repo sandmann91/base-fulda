@@ -16,7 +16,7 @@ const RAY_ALPHA = 0.01;
 // Ganze Außenkontur (7), aber nur jeder zweite Punkt davon strahlt — dichter
 // als reine Ecken, ohne dass wirklich jeder Punkt einen Strahl bekommt.
 const RAY_POINT_THRESHOLD = 15;
-const RAY_POINT_STRIDE = 10;
+const RAY_POINT_STRIDE = 15;
 
 // Ein paar große Strahlen, die unabhängig von "BASE." langsam um die Mitte
 // rotieren (eigene, sehr kleine Zufallsgeschwindigkeit je Strahl) und bis an
