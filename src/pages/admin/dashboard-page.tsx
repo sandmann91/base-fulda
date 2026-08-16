@@ -31,7 +31,7 @@ export function DashboardPage() {
   return (
     <>
       <Seo title="Admin" description="Event-Verwaltung." canonicalPath="/admin" />
-      <Container maxW="6xl" py={12}>
+      <Container maxW="6xl" pt={24} pb={12}>
         <Flex justify="space-between" align="center" mb={8} flexWrap="wrap" gap={4}>
           <Heading size="lg">Events verwalten</Heading>
           <Flex gap={2}>

@@ -1,6 +1,6 @@
 import { Container, Heading, Stack, Text } from "@chakra-ui/react";
 import { Seo } from "@/components/seo/seo";
-import { VideoHero } from "@/components/hero/video-hero";
+import { OrbitalTrailsHero } from "@/components/hero/orbital-trails-hero";
 import { EventList } from "@/components/events/event-list";
 
 const DESCRIPTION =
@@ -10,7 +10,7 @@ export function HomePage() {
   return (
     <>
       <Seo title="Subkultur Club & Events" description={DESCRIPTION} canonicalPath="/" />
-      <VideoHero />
+      <OrbitalTrailsHero />
       <Container maxW="6xl" py={16}>
         <Stack gap={4} mb={12}>
           <Heading as="h2" size="lg">

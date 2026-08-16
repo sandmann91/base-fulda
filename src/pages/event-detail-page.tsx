@@ -64,7 +64,7 @@ export function EventDetailPage() {
         canonicalPath={`/events/${event.slug}`}
         jsonLd={jsonLd}
       />
-      <Container maxW="3xl" py={16}>
+      <Container maxW="3xl" pt={24} pb={16}>
         <Image
           src={imageUrl}
           alt={event.title}

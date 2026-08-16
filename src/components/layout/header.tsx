@@ -4,7 +4,18 @@ import { Instagram, MapPin } from "lucide-react";
 
 export function Header() {
   return (
-    <Flex as="header" justify="space-between" align="center" px={{ base: 4, md: 8 }} py={4}>
+    <Flex
+      as="header"
+      justify="space-between"
+      align="center"
+      px={{ base: 4, md: 8 }}
+      h="20"
+      position="fixed"
+      insetX={0}
+      top={0}
+      zIndex={20}
+      bg="transparent"
+    >
       <Heading as="span" size="md" letterSpacing="wide">
         <Link asChild _hover={{ color: "brand.500" }}>
           <RouterLink to="/">BASE.</RouterLink>
