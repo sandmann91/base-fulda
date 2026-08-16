@@ -132,24 +132,47 @@
 
 
             if(count($data) > 0) {
-                foreach($data as $event) {
-                    echo '<div class="events">';
+                $multiple = count($data) > 1;
+
+                echo '<div class="event-gallery">';
+
+                if($multiple) {
+                    echo '<div class="event-gallery__controls">';
+                    echo '<button type="button" class="event-gallery__nav event-gallery__nav--prev" aria-label="Vorheriges Event"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>';
+                    echo '<div class="event-gallery__thumbs">';
+                    echo '<div class="event-gallery__thumbs-track" role="group" aria-label="Events auswählen">';
+
+                    foreach($data as $i => $event) {
+                        $active = $i === 0 ? ' is-active' : '';
+                        $pressed = $i === 0 ? 'true' : 'false';
+                        $label = $event['description'] !== '' ? $event['description'] : ('Event ' . ($i + 1));
+                        echo '<button type="button" class="event-gallery__thumb' . $active . '" data-index="' . $i . '" aria-pressed="' . $pressed . '" aria-label="' . htmlspecialchars($label) . '">';
+                        echo '<img src="events/' . $event['file'] . '" alt="" loading="lazy" />';
+                        echo '</button>';
+                    }
+
+                    echo '</div>';
+                    echo '</div>';
+                    echo '<button type="button" class="event-gallery__nav event-gallery__nav--next" aria-label="Nächstes Event"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>';
+                    echo '</div>';
+                }
+
+                echo '<div class="event-gallery__main">';
+
+                foreach($data as $i => $event) {
+                    $active = $i === 0 ? ' is-active' : '';
+                    echo '<div class="event-gallery__slide' . $active . '" data-index="' . $i . '">';
                     echo '<img src="events/' . $event['file'] . '" alt="' . htmlspecialchars($event['description']) . '" />';
 
                     if(!empty($event['text'])) {
-                        echo '<div class="row">
-                        <div class="col-md-6 offset-md-3">
-                                <div class="event-text py-4">
-                                    <center>' . nl2br(htmlspecialchars($event['text'])) . '</center>
-                                    </div>
-                                    </div>
-                                </div>';
+                        echo '<div class="event-text">' . nl2br(htmlspecialchars($event['text'])) . '</div>';
                     }
 
-
                     echo '</div>';
-                    echo '<div class="spacer"><hr></div>';
                 }
+
+                echo '</div>';
+                echo '</div>';
             } else {
                 echo '<div class="events">';
                 echo '<em>Aktuell keine Events anstehend</em>';
@@ -219,6 +242,8 @@
             </div>
         </footer>
     </div>
+
+    <script src="/assets/dist/gallery.js" defer></script>
 </body>
 
 </html>
