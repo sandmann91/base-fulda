@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { Box } from "@chakra-ui/react";
 
-// Farben bleiben nahe der Primärfarbe (#a855f7, Hue ~271°) — nur
-// Sättigung/Helligkeit variiert, kein Sprung zu anderen Farbfamilien.
+// Farben bleiben nahe der Primärfarbe (#a855f7, Hue ~271°) — jeder Punkt
+// bekommt einen leicht anderen Ton innerhalb dieser Bandbreite (wie beim
+// Hue-Jitter im allerersten Orbit-Hero), kein Sprung zu anderen Farbfamilien.
 const BRAND_HUE = 271;
+const HUE_JITTER = 40;
 
 const TAU = Math.PI * 2;
 const DEG_TO_RAD = Math.PI / 180;
@@ -139,7 +141,7 @@ export function TextFormationHero() {
     const ambientRays: AmbientRay[] = Array.from({ length: AMBIENT_RAY_COUNT }, () => ({
       angle: randomBetween(Math.PI, TAU),
       speed: (Math.random() < 0.5 ? -1 : 1) * randomBetween(0.2, AMBIENT_RAY_MAX_SPEED_DEG) * DEG_TO_RAD,
-      hue: BRAND_HUE,
+      hue: BRAND_HUE + randomBetween(-HUE_JITTER, HUE_JITTER),
     }));
 
     let textPoints: { x: number; y: number; isRayPoint: boolean }[] = [];
@@ -189,7 +191,7 @@ export function TextFormationHero() {
       pushOrb({
         angle: Math.atan2(dy, dx),
         radius: Math.max(4, Math.hypot(dx, dy) * SCALE),
-        hue: BRAND_HUE,
+        hue: BRAND_HUE + randomBetween(-HUE_JITTER, HUE_JITTER),
         saturation: randomBetween(75, 95),
         lightness: randomBetween(50, 72),
         bornAt: now,
