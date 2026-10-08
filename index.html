@@ -5,11 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="robots" content="index, follow" />
-    <title>BASE. Fulda – Subkultur Club & Events</title>
-    <meta
-      name="description"
-      content="BASE. ist der Club für Subkultur, elektronische Musik und Awareness in Fulda. Events, Partys und ein sicherer Raum für alle. Komm wie du bist!"
-    />
+    <!--
+      Vorschau für WhatsApp, Instagram, Facebook & Co. (die führen kein JavaScript aus).
+      Für /events/<slug> setzt public/event.php hier die Event-Daten ein — dafür müssen
+      die Tags einzeilig und im Format name/property="..." content="..." bleiben.
+      data-prerender: wird beim App-Start entfernt, danach übernimmt react-helmet (src/main.tsx).
+    -->
+    <title data-prerender>BASE. Fulda – Subkultur Club & Events</title>
+    <meta name="description" content="BASE. ist der Club für Subkultur, elektronische Musik und Awareness in Fulda. Events, Partys und ein sicherer Raum für alle. Komm wie du bist!" data-prerender />
+    <link rel="canonical" href="https://base-fulda.de/" data-prerender />
+    <meta property="og:type" content="website" data-prerender />
+    <meta property="og:site_name" content="BASE. Fulda" data-prerender />
+    <meta property="og:locale" content="de_DE" data-prerender />
+    <meta property="og:url" content="https://base-fulda.de/" data-prerender />
+    <meta property="og:title" content="BASE. Fulda – Subkultur Club & Events" data-prerender />
+    <meta property="og:description" content="BASE. ist der Club für Subkultur, elektronische Musik und Awareness in Fulda. Events, Partys und ein sicherer Raum für alle. Komm wie du bist!" data-prerender />
+    <meta property="og:image" content="https://base-fulda.de/social-preview.jpg" data-prerender />
+    <meta name="twitter:card" content="summary_large_image" data-prerender />
   </head>
   <body>
     <div id="root"></div>

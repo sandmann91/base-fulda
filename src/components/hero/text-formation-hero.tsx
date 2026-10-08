@@ -10,9 +10,19 @@ const HUE_JITTER = 40;
 const TAU = Math.PI * 2;
 const DEG_TO_RAD = Math.PI / 180;
 const TEXT = "BASE.";
-const TEXT_SAMPLE_STEP = 5;
+// Anta gibt es nur in 400 — 700 würde der Browser künstlich verfetten/verzerren.
+const FONT_WEIGHT = 400;
+const FONT_FAMILY = '"Anta", sans-serif';
+// Schriftzug füllt höchstens diesen Anteil von Breite/Höhe des Heros.
+const TEXT_MAX_WIDTH_RATIO = 0.88;
+const TEXT_MAX_HEIGHT_RATIO = 0.6;
+const TEXT_MAX_FONT_SIZE = 504;
+// Punktabstand relativ zur Schriftgröße (Desktop ≈ 15px), auf kleinen Screens
+// nach unten begrenzt, damit die Punkte nicht zu einer Fläche verschmelzen.
+const FONT_SIZE_PER_SAMPLE_STEP = 34;
+const MIN_SAMPLE_STEP = 6;
 const REVEAL_DURATION_MS = 2600;
-const SCALE = 3;
+const FONT_LOAD_TIMEOUT_MS = 2000;
 const CLEAR_ALPHA = 0.05;
 const RAY_ALPHA = 0.01;
 // Ganze Außenkontur (7), aber nur jeder zweite Punkt davon strahlt — dichter
@@ -72,45 +82,72 @@ const CORNER_NEIGHBOR_OFFSETS = [
  * Randpunkte einer Kontur haben weniger "Tinte"-Nachbarn als Punkte mitten in
  * einer dicken Linie (die sind fast komplett umgeben, 8 von 8).
  */
-function isRayPoint(data: Uint8ClampedArray, boxWidth: number, boxHeight: number, x: number, y: number): boolean {
+function isRayPoint(
+  data: Uint8ClampedArray,
+  boxWidth: number,
+  boxHeight: number,
+  x: number,
+  y: number,
+  step: number,
+): boolean {
   let inkNeighbors = 0;
   for (const [dx, dy] of CORNER_NEIGHBOR_OFFSETS) {
-    const nx = x + dx * TEXT_SAMPLE_STEP;
-    const ny = y + dy * TEXT_SAMPLE_STEP;
+    const nx = x + dx * step;
+    const ny = y + dy * step;
     if (nx < 0 || ny < 0 || nx >= boxWidth || ny >= boxHeight) continue;
     if (data[(ny * boxWidth + nx) * 4 + 3] > 128) inkNeighbors++;
   }
   return inkNeighbors <= RAY_POINT_THRESHOLD;
 }
 
+/**
+ * Tastet den Text direkt in Zielgröße ab: Schriftgröße wird so gewählt, dass
+ * der Schriftzug auf jede Bildschirmbreite passt (Handy wie Desktop).
+ * Liefert Punkte in Canvas-Koordinaten (Ursprung oben links).
+ */
 function samplePointsFromText(
   text: string,
-  boxWidth: number,
-  boxHeight: number,
-): { x: number; y: number; isRayPoint: boolean }[] {
+  width: number,
+  height: number,
+): { points: { x: number; y: number; isRayPoint: boolean }[]; step: number } {
+  const boxWidth = Math.ceil(width);
+  const boxHeight = Math.ceil(height);
+  if (boxWidth <= 0 || boxHeight <= 0) return { points: [], step: MIN_SAMPLE_STEP };
+
   const offscreen = document.createElement("canvas");
   offscreen.width = boxWidth;
   offscreen.height = boxHeight;
-  const octx = offscreen.getContext("2d");
-  if (!octx) return [];
+  const octx = offscreen.getContext("2d", { willReadFrequently: true });
+  if (!octx) return { points: [], step: MIN_SAMPLE_STEP };
 
-  octx.clearRect(0, 0, boxWidth, boxHeight);
+  const REFERENCE_SIZE = 100;
+  octx.font = `${FONT_WEIGHT} ${REFERENCE_SIZE}px ${FONT_FAMILY}`;
+  const referenceWidth = octx.measureText(text).width || REFERENCE_SIZE;
+  const fontSize = Math.floor(
+    Math.min(
+      (REFERENCE_SIZE * boxWidth * TEXT_MAX_WIDTH_RATIO) / referenceWidth,
+      boxHeight * TEXT_MAX_HEIGHT_RATIO,
+      TEXT_MAX_FONT_SIZE,
+    ),
+  );
+  const step = Math.max(MIN_SAMPLE_STEP, Math.round(fontSize / FONT_SIZE_PER_SAMPLE_STEP));
+
   octx.fillStyle = "#fff";
   octx.textAlign = "center";
   octx.textBaseline = "middle";
-  octx.font = `700 ${Math.floor(boxHeight * 0.7)}px "Anta", sans-serif`;
+  octx.font = `${FONT_WEIGHT} ${fontSize}px ${FONT_FAMILY}`;
   octx.fillText(text, boxWidth / 2, boxHeight / 2);
 
   const { data } = octx.getImageData(0, 0, boxWidth, boxHeight);
   const points: { x: number; y: number; isRayPoint: boolean }[] = [];
-  for (let y = 0; y < boxHeight; y += TEXT_SAMPLE_STEP) {
-    for (let x = 0; x < boxWidth; x += TEXT_SAMPLE_STEP) {
+  for (let y = 0; y < boxHeight; y += step) {
+    for (let x = 0; x < boxWidth; x += step) {
       if (data[(y * boxWidth + x) * 4 + 3] > 128) {
-        points.push({ x, y, isRayPoint: isRayPoint(data, boxWidth, boxHeight, x, y) });
+        points.push({ x, y, isRayPoint: isRayPoint(data, boxWidth, boxHeight, x, y, step) });
       }
     }
   }
-  return points;
+  return { points, step };
 }
 
 /**
@@ -145,6 +182,7 @@ export function TextFormationHero() {
     }));
 
     let textPoints: { x: number; y: number; isRayPoint: boolean }[] = [];
+    let dotRadius = 2;
     let spawnSchedule: number[] = [];
     let spawned: boolean[] = [];
 
@@ -153,9 +191,9 @@ export function TextFormationHero() {
     }
 
     function buildTextSchedule(now: number) {
-      const boxWidth = Math.min(width * 0.9, 900);
-      const boxHeight = Math.min(height * 0.5, 240);
-      const raw = samplePointsFromText(TEXT, boxWidth, boxHeight);
+      const { points: raw, step } = samplePointsFromText(TEXT, width, height);
+      // Punktgröße mit dem Abstand skalieren — auf dem Handy liegen die Punkte enger.
+      dotRadius = Math.min(2, Math.max(1.2, step / 7));
 
       let rayCounter = 0;
       textPoints = raw.map((p) => {
@@ -164,11 +202,7 @@ export function TextFormationHero() {
           showRay = rayCounter % RAY_POINT_STRIDE === 0;
           rayCounter++;
         }
-        return {
-          x: p.x - boxWidth / 2 + width / 2,
-          y: p.y - boxHeight / 2 + height / 2,
-          isRayPoint: showRay,
-        };
+        return { x: p.x, y: p.y, isRayPoint: showRay };
       });
 
       const order = shuffledIndices(textPoints.length);
@@ -177,9 +211,6 @@ export function TextFormationHero() {
         spawnSchedule[pointIndex] = now + (orderIndex / Math.max(1, order.length)) * REVEAL_DURATION_MS;
       });
       spawned = new Array(textPoints.length).fill(false);
-
-      const rayCount = textPoints.filter((p) => p.isRayPoint).length;
-      console.log(`[TextFormationHero] ${textPoints.length} Punkte, davon ${rayCount} mit Strahl`);
     }
 
     function spawnTextOrb(px: number, py: number, now: number, showRay: boolean) {
@@ -190,7 +221,7 @@ export function TextFormationHero() {
 
       pushOrb({
         angle: Math.atan2(dy, dx),
-        radius: Math.max(4, Math.hypot(dx, dy) * SCALE),
+        radius: Math.max(4, Math.hypot(dx, dy)),
         hue: BRAND_HUE + randomBetween(-HUE_JITTER, HUE_JITTER),
         saturation: randomBetween(75, 95),
         lightness: randomBetween(50, 72),
@@ -201,24 +232,39 @@ export function TextFormationHero() {
       });
     }
 
+    // Erst abtasten, wenn Anta wirklich geladen ist — sonst formt sich "BASE."
+    // aus der Fallback-Schrift. document.fonts.ready reicht nicht: Der Canvas
+    // fordert die Schrift nicht zuverlässig selbst an.
+    let fontReady = false;
+
+    function rebuild() {
+      if (!fontReady) return;
+      orbs.length = 0;
+      buildTextSchedule(performance.now());
+    }
+
     function resize() {
       const rect = canvas!.getBoundingClientRect();
+      // Nur bei echter Größenänderung neu aufbauen (ResizeObserver feuert auch initial).
+      if (rect.width === width && rect.height === height) return;
       width = rect.width;
       height = rect.height;
       canvas!.width = width * dpr;
       canvas!.height = height * dpr;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      orbs.length = 0;
-      buildTextSchedule(performance.now());
+      rebuild();
     }
     resize();
 
-    // Sobald die Anta-Schriftart sicher geladen ist, den Text neu abtasten
-    // (verhindert Fallback-Font-Kanten im allerersten Frame).
-    document.fonts.ready.then(() => {
-      orbs.length = 0;
-      buildTextSchedule(performance.now());
-    }).catch(() => {});
+    let cancelled = false;
+    const onFontReady = () => {
+      if (cancelled || fontReady) return;
+      fontReady = true;
+      rebuild();
+    };
+    document.fonts.load(`${FONT_WEIGHT} 100px ${FONT_FAMILY}`).then(onFontReady, onFontReady);
+    // Notfall: Falls die Schrift hängt, nach kurzer Zeit mit Fallback starten.
+    const fontTimeout = window.setTimeout(onFontReady, FONT_LOAD_TIMEOUT_MS);
 
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(canvas);
@@ -284,10 +330,13 @@ export function TextFormationHero() {
           ctx!.stroke();
         }
 
+        // Kein shadowBlur auf den Punkten: Der Schatten war durch die geerbte
+        // (fast transparente) shadowColor ohnehin kaum sichtbar, kostete aber
+        // bei >1000 Punkten pro Frame so viel, dass es auf Handys hing.
+        ctx!.shadowBlur = 0;
         ctx!.beginPath();
-        ctx!.arc(x, y, 2, 0, TAU);
+        ctx!.arc(x, y, dotRadius, 0, TAU);
         ctx!.fillStyle = `hsla(${orb.hue}, 90%, 82%, ${alpha})`;
-        ctx!.shadowBlur = 14;
         ctx!.fill();
       }
 
@@ -295,6 +344,8 @@ export function TextFormationHero() {
     }
 
     return () => {
+      cancelled = true;
+      window.clearTimeout(fontTimeout);
       cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
     };
@@ -304,7 +355,7 @@ export function TextFormationHero() {
     <Box as="section" position="relative" overflow="hidden" minH="80vh" bg="black">
       <canvas
         ref={canvasRef}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", touchAction: "none" }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
       />
     </Box>
   );

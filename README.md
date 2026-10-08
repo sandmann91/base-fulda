@@ -19,9 +19,9 @@ Admin-Bereich: `/admin/login`.
 
 `npm run build` erzeugt `dist/`. Für den Produktivbetrieb auf einem Standard-Apache/PHP-Webserver:
 
-1. Inhalt von `dist/` (`index.html`, `assets/`, `favicon.svg` **und `.htaccess`**) direkt ins Webroot hochladen (nicht als Unterordner). Im FTP-Client versteckte Dateien einblenden, sonst fehlt die `.htaccess`.
+1. Inhalt von `dist/` (`index.html`, `assets/`, `favicon.svg`, `social-preview.jpg`, `event.php` **und `.htaccess`**) direkt ins Webroot hochladen (nicht als Unterordner). Im FTP-Client versteckte Dateien einblenden, sonst fehlt die `.htaccess`.
 2. `api/`- und `data/`-Ordner daneben ins selbe Webroot hochladen — jeweils inkl. ihrer `.htaccess` und inkl. `api/lib/config.local.php` mit dem echten Passwort-Hash (diese Datei ist nicht Teil des Git-Repos).
-3. Die `.htaccess` aus `public/` (landet beim Build im Root von `dist/`) erzwingt HTTPS auf `base-fulda.de`, reicht `/api/*` an PHP durch, liefert echte Dateien direkt aus und gibt alle anderen Routen (`/events/:slug`, `/admin`, ...) an die SPA, die dann clientseitig per React Router übernimmt. `api/.htaccess` sperrt `api/lib/`, `data/.htaccess` sperrt den Zugriff auf die Laufzeitdaten (Events-JSON, Login-Throttle).
+3. Die `.htaccess` aus `public/` (landet beim Build im Root von `dist/`) erzwingt HTTPS auf `base-fulda.de`, reicht `/api/*` an PHP durch, leitet `/events/<slug>` an `event.php` (setzt Titel, Beschreibung und Flyer als Link-Vorschau für WhatsApp & Co. ein und liefert dann die SPA aus), liefert echte Dateien direkt aus und gibt alle anderen Routen (`/admin`, ...) an die SPA, die dann clientseitig per React Router übernimmt. `api/.htaccess` sperrt `api/lib/`, `data/.htaccess` sperrt den Zugriff auf die Laufzeitdaten (Events-JSON, Login-Throttle).
 4. Voraussetzungen am Server: PHP ≥ 8.1, SSL-Zertifikat für `base-fulda.de` und `www.base-fulda.de`, Schreibrechte für PHP auf `data/` und `api/uploads/`.
 
 Es gibt kein CI/CD — `dist/` wird bewusst **nicht** committed und muss vor jedem Deploy frisch gebaut werden.

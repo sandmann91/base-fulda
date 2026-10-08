@@ -13,7 +13,7 @@ export function HomePage() {
       <Seo title="Subkultur Club & Events" description={DESCRIPTION} canonicalPath="/" />
       <TextFormationHero />
       <Container maxW="6xl" py={16} fontSize={{ base: "lg", md: "xl" }}>
-        <Stack gap={6} mb={24}>
+        <Stack id="club" gap={6} mb={24} scrollMarginTop="24">
           <NeonHeading as="h2">Club</NeonHeading>
           <Text>
             Subkultur braucht einen Raum. Eine Basis, auf der Kreativität und Ekstase wachsen können. base. ist
@@ -24,12 +24,12 @@ export function HomePage() {
           <Text>Kein Platz für Diskriminierung. Viel Platz für dich.</Text>
         </Stack>
 
-        <Stack gap={6} mb={24}>
+        <Stack id="events" gap={6} mb={24} scrollMarginTop="24">
           <NeonHeading as="h2">Events</NeonHeading>
           <EventList />
         </Stack>
 
-        <Stack gap={6}>
+        <Stack id="awareness" gap={6} scrollMarginTop="24">
           <NeonHeading as="h2">Awareness</NeonHeading>
           <Text>
             Wir von der BASE möchten, dass ihr bei uns einen sicheren Ort zum raven habt, an dem sich möglichst alle

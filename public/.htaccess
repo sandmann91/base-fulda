@@ -11,6 +11,9 @@ RewriteRule ^(.*)//+(.*)$ /$1/$2 [R=301,L]
 # API unverändert an PHP durchreichen
 RewriteRule ^api/ - [L]
 
+# Event-Seiten über event.php: liefert die SPA mit Event-Vorschau (Titel, Flyer) für WhatsApp & Co.
+RewriteRule ^events/([a-z0-9-]+)/?$ event.php?slug=$1 [L,QSA]
+
 # Echte Dateien/Verzeichnisse (gebaute Assets, favicon, ...) direkt ausliefern
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

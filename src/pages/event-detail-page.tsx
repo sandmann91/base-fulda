@@ -79,6 +79,7 @@ export function EventDetailPage() {
         title={event.title}
         description={seoDescription}
         canonicalPath={`/events/${event.slug}`}
+        image={imageUrl}
         jsonLd={jsonLd}
       />
       <Container maxW="3xl" pt={24} pb={16}>
