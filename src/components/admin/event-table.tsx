@@ -34,7 +34,7 @@ export function EventTable({ events, onEdit, onChange }: EventTableProps) {
           <Table.Row key={event.id}>
             <Table.Cell>{formatEventDate(event.date)}</Table.Cell>
             <Table.Cell>{event.title}</Table.Cell>
-            <Table.Cell>{event.price}</Table.Cell>
+            <Table.Cell>{event.price || "–"}</Table.Cell>
             <Table.Cell>
               <HStack justify="flex-end">
                 <Button size="sm" variant="ghost" onClick={() => onEdit(event)} aria-label="Bearbeiten">

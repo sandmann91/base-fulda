@@ -84,20 +84,19 @@ export function EventForm({ event, onDone, onCancel }: EventFormProps) {
           <Field.Label>Einlass</Field.Label>
           <Input type="time" value={doorsTime ?? ""} onChange={(e) => setDoorsTime(e.target.value)} />
         </Field.Root>
-        <Field.Root required>
+        <Field.Root>
           <Field.Label>Preis</Field.Label>
           <Input
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="z.B. 10€ oder Eintritt frei"
-            required
           />
         </Field.Root>
       </HStack>
 
-      <Field.Root required mb={4}>
+      <Field.Root mb={4}>
         <Field.Label>Beschreibung</Field.Label>
-        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} required />
+        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} />
       </Field.Root>
 
       <Field.Root required={!event} mb={4}>

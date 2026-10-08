@@ -31,7 +31,7 @@ export function EventCard({ event }: { event: EventRecord }) {
           <Heading as="h3" size="md">
             {event.title}
           </Heading>
-          <Text color="fg.muted">{event.price}</Text>
+          {event.price && <Text color="fg.muted">{event.price}</Text>}
         </Stack>
       </RouterLink>
     </Box>

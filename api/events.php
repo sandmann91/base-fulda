@@ -42,7 +42,7 @@ if ($method === 'POST') {
     $doorsTime = trim((string) ($_POST['doorsTime'] ?? ''));
     $price = trim((string) ($_POST['price'] ?? ''));
 
-    if ($title === '' || $description === '' || $date === '' || $startTime === '' || $price === '') {
+    if ($title === '' || $date === '' || $startTime === '') {
         Response::error('missing_fields', 422);
     }
 
