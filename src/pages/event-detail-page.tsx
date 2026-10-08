@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Button, Center, Container, Image, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Button, Center, Container, HStack, Image, Spinner, Stack, Text } from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
 import { NeonHeading } from "@/components/ui/neon-heading";
+import { ShareButton } from "@/components/events/share-button";
 import { getEvent } from "@/api/events";
 import type { EventRecord } from "@/types/event";
 import { Seo } from "@/components/seo/seo";
@@ -81,9 +82,12 @@ export function EventDetailPage() {
         jsonLd={jsonLd}
       />
       <Container maxW="3xl" pt={24} pb={16}>
-        <Button variant="ghost" onClick={goBack} mb={6} ml={-4}>
-          <ArrowLeft /> Zurück
-        </Button>
+        <HStack justify="space-between" mb={6}>
+          <Button variant="ghost" onClick={goBack} ml={-4}>
+            <ArrowLeft /> Zurück
+          </Button>
+          <ShareButton title={event.title} url={`${window.location.origin}/events/${event.slug}`} />
+        </HStack>
         {/* Flyer vollständig zeigen: volle Breite, Höhe ergibt sich aus dem Seitenverhältnis, nichts beschnitten */}
         <Image src={imageUrl} alt={event.title} borderRadius="md" mb={8} w="full" h="auto" />
         {/* Etwas kleiner als die Section-Überschriften, da Event-Titel oft länger sind */}
@@ -97,7 +101,11 @@ export function EventDetailPage() {
           </Text>
           {event.price && <Text>{event.price}</Text>}
         </Stack>
-        {event.description && <Text whiteSpace="pre-line">{event.description}</Text>}
+        {event.description && (
+          <Text whiteSpace="pre-line" color="white">
+            {event.description}
+          </Text>
+        )}
       </Container>
     </>
   );

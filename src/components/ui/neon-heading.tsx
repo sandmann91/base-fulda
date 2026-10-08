@@ -72,6 +72,8 @@ export function NeonHeading({ style, children, ...props }: HeadingProps) {
     <Heading
       color="brand.500"
       fontSize={{ base: "4xl", md: "6xl" }}
+      // Mehr Luft bei Umbruch, sonst laufen die Glows der Zeilen ineinander
+      lineHeight="1.25"
       style={{ textShadow: NEON_SHADOW, ...style }}
       {...props}
     >
