@@ -54,7 +54,7 @@ export interface OrbitalTrailsHeroHandle {
 /**
  * Hero-Sektion mit Canvas-Partikelanimation: orbitende Licht-Trails um die Mitte,
  * reagiert auf Maus-/Touch-Interaktion. Eigenständige, austauschbare Hero-Komponente
- * (Alternative zu VideoHero) ohne Pflicht-Props.
+ * ohne Pflicht-Props.
  *
  * Die Ref-API ist bewusst schlank gehalten, damit sich künftige Nav-Punkte hierüber
  * andocken lassen (Punkt anklicken -> spawnOrbAt an dessen Position aufrufen), ohne
